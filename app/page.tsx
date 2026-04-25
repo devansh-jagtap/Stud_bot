@@ -1,65 +1,161 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useChat } from "@ai-sdk/react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { BotIcon, UserIcon, SendIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useRef, useEffect, useState } from "react";
+
+export default function ChatPage() {
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, status } = useChat();
+  const isLoading = status === "submitted" || status === "streaming";
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = input.trim();
+    if (!text || isLoading) return;
+
+    setInput("");
+    await sendMessage({ text });
+  };
+
+  // Ref on a bottom anchor div — much more reliable than scrollTop
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="flex h-screen w-full flex-col bg-background">
+      {/* Header */}
+      <header className="border-b bg-card px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+            <BotIcon className="size-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold">AI Chatbot</h1>
+            <p className="text-sm text-muted-foreground">Powered by Gemini 2.5 Flash</p>
+          </div>
+        </div>
+      </header>
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="flex flex-col gap-4 p-6">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-32 text-center">
+                <div className="flex size-20 items-center justify-center rounded-full bg-muted mb-4">
+                  <BotIcon className="size-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Start a conversation</h3>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  Ask me anything and I'll do my best to help you
+                </p>
+              </div>
+            ) : (
+              messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={cn(
+                    "flex gap-3 max-w-3xl",
+                    message.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"
+                  )}
+                >
+                  {/* ✅ Removed invalid size="sm" prop */}
+                  <Avatar className="mt-1 shrink-0 size-8">
+                    <AvatarFallback className={cn(
+                      "flex items-center justify-center",
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground"
+                    )}>
+                      {message.role === "user" ? (
+                        <UserIcon className="size-4" />
+                      ) : (
+                        <BotIcon className="size-4" />
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className={cn(
+                    "rounded-lg px-4 py-3 max-w-[80%]",
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
+                  )}>
+                    <div className="text-sm whitespace-pre-wrap">
+                      {message.parts?.map((part, i) =>
+                        part.type === "text" ? <span key={i}>{part.text}</span> : null
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+
+            {isLoading && (
+              <div className="flex gap-3 max-w-3xl mr-auto">
+                <Avatar className="mt-1 shrink-0 size-8">
+                  <AvatarFallback className="bg-secondary text-secondary-foreground">
+                    <BotIcon className="size-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="rounded-lg px-4 py-3 bg-muted">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="size-2 animate-bounce rounded-full bg-foreground [animation-delay:-0.3s]" />
+                      <span className="size-2 animate-bounce rounded-full bg-foreground [animation-delay:-0.15s]" />
+                      <span className="size-2 animate-bounce rounded-full bg-foreground" />
+                    </div>
+                    <span className="text-sm text-muted-foreground">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ✅ Invisible div at the bottom — scrollIntoView targets this */}
+            <div ref={bottomRef} />
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Input Area */}
+      <div className="border-t bg-card p-4">
+        <div className="mx-auto max-w-3xl">
+          <form onSubmit={handleSubmit} className="flex gap-2">
+      
+<Input
+  value={input}
+  onChange={handleInputChange}
+  placeholder="Type your message..."
+  disabled={isLoading}
+  className="flex-1"
+  autoComplete="off"
+/>
+            <Button
+              type="submit"
+              disabled={isLoading || !input?.trim()}
+              size="icon"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <SendIcon className="size-4" />
+            </Button>
+          </form>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Press Enter to send, Shift + Enter for new line
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
