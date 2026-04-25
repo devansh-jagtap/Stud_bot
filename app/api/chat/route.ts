@@ -1,29 +1,12 @@
-import {
-  streamText,
-  convertToModelMessages,
-  type UIMessage,
-  type ModelMessage,
-} from "ai";
+import { streamText, convertToModelMessages, type UIMessage } from "ai";
 import { google } from "@ai-sdk/google";
 
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
   try {
-    const { messages }: { messages?: UIMessage[] | ModelMessage[] } =
-      await request.json();
-    if (!Array.isArray(messages)) {
-      return new Response(JSON.stringify({ error: "Invalid messages payload" }), {
-        status: 400,
-      });
-    }
-
-    const modelMessages =
-      messages.length === 0
-        ? []
-        : "parts" in messages[0]
-          ? await convertToModelMessages(messages as UIMessage[])
-          : (messages as ModelMessage[]);
+    const { messages }: { messages: UIMessage[] } = await request.json();
+    const modelMessages = await convertToModelMessages(messages);
 
     const result = streamText({
       model: google("gemini-2.5-flash"),
