@@ -128,7 +128,7 @@ export default function ChatLandingPage() {
         {active && (
           <button
             className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(0,0,0,0.25)] transition hover:bg-neutral-700"
-            onClick={() => router.push("/chatbot")}
+            onClick={() => router.push(`/chatbot?bot=${active.id}`)}
           >
             <Sparkles className="h-4 w-4" />
             Start {active.title} chat

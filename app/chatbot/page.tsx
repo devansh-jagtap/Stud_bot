@@ -12,6 +12,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ChatSidebar from "@/components/ChatSidebar";
 import { saveSession, getSession, sessionTitle, type ChatSession } from "@/lib/chat-history";
 import type { UIMessage } from "ai";
+import { DefaultChatTransport } from "ai";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
@@ -25,10 +26,15 @@ function ChatBotInner() {
   const router = useRouter();
 
   const [sessionId, setSessionId] = useState<string>(() => searchParams.get("id") ?? newId());
+  const botType = searchParams.get("bot") ?? "educational";
   const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
 
   const { messages, sendMessage, status, setMessages } = useChat({
     id: sessionId,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      body: { botType },
+    }),
   });
   const isLoading = status === "submitted" || status === "streaming";
   const [input, setInput] = useState("");
@@ -112,7 +118,7 @@ function ChatBotInner() {
               <BotIcon className="size-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold">AI Chatbot</h1>
+              <h1 className="text-lg font-semibold capitalize">{botType} Assistant</h1>
               <p className="text-sm text-muted-foreground">Powered by Gemini 2.5 Flash</p>
             </div>
           </div>
