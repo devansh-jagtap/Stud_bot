@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   GraduationCap, Code2, ImageIcon, Briefcase,
   PenLine, Video, Sparkles, ArrowRight,
@@ -26,6 +27,7 @@ const CHAT_TYPES: ChatType[] = [
 export default function ChatLandingPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const active = CHAT_TYPES.find((t) => t.id === selected) ?? null;
+  const router = useRouter();
 
   return (
     <main className="relative min-h-screen bg-[#ffffff] text-neutral-900">
@@ -126,7 +128,7 @@ export default function ChatLandingPage() {
         {active && (
           <button
             className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(0,0,0,0.25)] transition hover:bg-neutral-700"
-            onClick={() => {}}
+            onClick={() => router.push("/chatbot")}
           >
             <Sparkles className="h-4 w-4" />
             Start {active.title} chat
