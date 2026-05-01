@@ -75,7 +75,7 @@ export default function ChatLandingPage() {
 
           {/* Subtitle — centered, under the title */}
           <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-500">
-            Choose how you want to think today — code, write, learn, or create.
+            Choose how you want to think today code, write, learn, or create.
             Each chat is tuned for the job.
           </p>
         </section>
