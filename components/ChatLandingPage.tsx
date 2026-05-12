@@ -123,8 +123,8 @@ export default function ChatLandingPage() {
           <div className="flex flex-col gap-4 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
             <p>© 2026 Lumen. Built for focused AI conversations.</p>
             <div className="flex items-center gap-5">
-              <a href="#" className="transition-colors hover:text-neutral-900">Pricing</a>
-              <a href="#" className="transition-colors hover:text-neutral-900">Docs</a>
+              <a href="/chatbot?bot=educational" className="transition-colors hover:text-neutral-900">Educational</a>
+              <a href="/chatbot?bot=coding" className="transition-colors hover:text-neutral-900">Coding</a>
               <a href="/chatbot?bot=educational" className="transition-colors hover:text-neutral-900">Open chat</a>
             </div>
           </div>
