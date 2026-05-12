@@ -125,7 +125,7 @@ export default function ChatLandingPage() {
             <div className="flex items-center gap-5">
               <a href="/chatbot?bot=educational" className="transition-colors hover:text-neutral-900">Educational</a>
               <a href="/chatbot?bot=coding" className="transition-colors hover:text-neutral-900">Coding</a>
-              <a href="/chatbot?bot=educational" className="transition-colors hover:text-neutral-900">Open chat</a>
+              <a href="/chatbot" className="transition-colors hover:text-neutral-900">Open chat</a>
             </div>
           </div>
         </footer>
