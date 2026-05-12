@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BotIcon, UserIcon, SendIcon, ChevronUp, Zap } from "lucide-react";
+import { BotIcon, UserIcon, SendIcon, ChevronUp, Zap, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRef, useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -204,6 +204,14 @@ function ChatBotInner() {
         <header className="border-b bg-card px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+              >
+                <ArrowLeft className="size-3.5" />
+                Back
+              </button>
               <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
                 <BotIcon className="size-5 text-primary" />
               </div>
