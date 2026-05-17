@@ -10,6 +10,8 @@ type Props = {
   onNew: () => void;
   onSelect: (id: string) => void;
   refreshKey?: number;
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
 };
 
 type Group = { label: string; sessions: ChatSession[] };
@@ -39,9 +41,15 @@ function groupSessions(sessions: ChatSession[]): Group[] {
   return groups;
 }
 
-export default function ChatSidebar({ activeId, onNew, onSelect, refreshKey }: Props) {
+export default function ChatSidebar({
+  activeId,
+  onNew,
+  onSelect,
+  refreshKey,
+  collapsed,
+  onCollapsedChange,
+}: Props) {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     setSessions(listSessions());
@@ -62,7 +70,7 @@ export default function ChatSidebar({ activeId, onNew, onSelect, refreshKey }: P
       {collapsed && (
         <div className="flex h-full w-12 flex-col items-center gap-3 border-r border-neutral-200 bg-neutral-50 py-4">
           <button
-            onClick={() => setCollapsed(false)}
+            onClick={() => onCollapsedChange(false)}
             className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors"
             title="Open sidebar"
           >
@@ -91,7 +99,7 @@ export default function ChatSidebar({ activeId, onNew, onSelect, refreshKey }: P
               New Chat
             </button>
             <button
-              onClick={() => setCollapsed(true)}
+              onClick={() => onCollapsedChange(true)}
               className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700 transition-colors"
               title="Close sidebar"
             >
