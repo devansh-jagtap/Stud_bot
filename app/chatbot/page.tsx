@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BotIcon, UserIcon, SendIcon, ChevronUp, Zap, ArrowLeft } from "lucide-react";
+import { BotIcon, UserIcon, SendIcon, ChevronUp, Zap, ArrowLeft, PanelLeftOpenIcon, PanelLeftCloseIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRef, useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -115,6 +115,7 @@ function ChatBotInner() {
   const [showModels, setShowModels]       = useState(false);
   const searchParams                      = useSearchParams();
   const router                            = useRouter();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const [sessionId, setSessionId]         = useState<string>(() => searchParams.get("id") ?? newId());
   const botType                           = searchParams.get("bot") ?? "educational";
@@ -197,16 +198,26 @@ function ChatBotInner() {
         onNew={handleNewChat}
         onSelect={handleSelectSession}
         refreshKey={sidebarRefreshKey}
+        collapsed={isSidebarCollapsed}
+        onCollapsedChange={setIsSidebarCollapsed}
       />
 
       <div className="flex flex-1 flex-col min-w-0">
         {/* Header */}
         <header className="border-b bg-card px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => router.push("/")}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarCollapsed((v) => !v)}
+                  className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+                >
+                  {isSidebarCollapsed ? <PanelLeftOpenIcon className="size-3.5" /> : <PanelLeftCloseIcon className="size-3.5" />}
+                  Chats
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/")}
                 className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
               >
                 <ArrowLeft className="size-3.5" />
